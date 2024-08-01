@@ -1,0 +1,56 @@
+<html>
+<head>
+<title>plantProjectTest.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #7a7e85;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+plantProjectTest.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">eecs1021</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firmata4j</span><span class="s2">.</span><span class="s1">IODevice</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firmata4j</span><span class="s2">.</span><span class="s1">Pin</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firmata4j</span><span class="s2">.</span><span class="s1">firmata</span><span class="s2">.</span><span class="s1">FirmataDevice</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">junit</span><span class="s2">.</span><span class="s1">Test</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">IOException</span><span class="s2">;</span>
+<span class="s0">import static </span><span class="s1">org</span><span class="s2">.</span><span class="s1">junit</span><span class="s2">.</span><span class="s1">Assert</span><span class="s2">.*;</span>
+<span class="s0">public class </span><span class="s1">plantProjectTest </span><span class="s2">{</span>
+    <span class="s1">@Test</span>
+    <span class="s0">public void </span><span class="s1">pinvalueTest</span><span class="s2">() </span><span class="s0">throws </span><span class="s1">IOException </span><span class="s2">{</span>
+        <span class="s1">String port </span><span class="s2">= </span><span class="s3">&quot;COM3&quot;</span><span class="s2">;</span>
+        <span class="s1">IODevice arduino </span><span class="s2">= </span><span class="s0">new </span><span class="s1">FirmataDevice</span><span class="s2">(</span><span class="s1">port</span><span class="s2">);</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s4">// Start the Arduino device</span>
+            <span class="s1">arduino</span><span class="s2">.</span><span class="s1">start</span><span class="s2">();</span>
+            <span class="s4">// Wait for the Arduino device to initialize</span>
+            <span class="s1">arduino</span><span class="s2">.</span><span class="s1">ensureInitializationIsDone</span><span class="s2">();</span>
+            <span class="s4">// Write to pin 2</span>
+            <span class="s1">plantProject</span><span class="s2">.</span><span class="s1">writePin</span><span class="s2">(</span><span class="s1">arduino</span><span class="s2">,</span><span class="s5">2</span><span class="s2">,</span><span class="s5">1</span><span class="s2">);</span>
+            <span class="s4">// Get the pin object corresponding to pin 2</span>
+            <span class="s1">Pin pumpPin </span><span class="s2">= </span><span class="s1">arduino</span><span class="s2">.</span><span class="s1">getPin</span><span class="s2">(</span><span class="s5">2</span><span class="s2">);</span>
+            <span class="s4">// pin object is not null</span>
+            <span class="s1">assertNotNull</span><span class="s2">(</span><span class="s1">pumpPin</span><span class="s2">);</span>
+            <span class="s4">// pin mode is set to OUTPUT</span>
+            <span class="s1">assertEquals</span><span class="s2">(</span><span class="s1">Pin</span><span class="s2">.</span><span class="s1">Mode</span><span class="s2">.</span><span class="s1">OUTPUT</span><span class="s2">, </span><span class="s1">pumpPin</span><span class="s2">.</span><span class="s1">getMode</span><span class="s2">());</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+            <span class="s1">fail</span><span class="s2">(</span><span class="s3">&quot;Exception occurred: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">} </span><span class="s0">finally </span><span class="s2">{</span>
+            <span class="s4">// Stop the Grove board</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">arduino </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+                <span class="s1">arduino</span><span class="s2">.</span><span class="s1">stop</span><span class="s2">();</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span></pre>
+</body>
+</html>

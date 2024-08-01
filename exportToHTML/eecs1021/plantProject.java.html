@@ -1,0 +1,148 @@
+<html>
+<head>
+<title>plantProject.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #2aacb8;}
+.s4 { color: #6aab73;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+plantProject.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">eecs1021</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firmata4j</span><span class="s2">.</span><span class="s1">IODevice</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firmata4j</span><span class="s2">.</span><span class="s1">Pin</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">IOException</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firmata4j</span><span class="s2">.</span><span class="s1">I2CDevice</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firmata4j</span><span class="s2">.</span><span class="s1">ssd1306</span><span class="s2">.</span><span class="s1">SSD1306</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">firmata4j</span><span class="s2">.</span><span class="s1">firmata</span><span class="s2">.</span><span class="s1">FirmataDevice</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">edu</span><span class="s2">.</span><span class="s1">princeton</span><span class="s2">.</span><span class="s1">cs</span><span class="s2">.</span><span class="s1">introcs</span><span class="s2">.</span><span class="s1">StdDraw</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">ArrayList</span><span class="s2">;</span>
+<span class="s0">public class </span><span class="s1">plantProject </span><span class="s2">{</span>
+    <span class="s0">static final int </span><span class="s1">maxGraphVals </span><span class="s2">= </span><span class="s3">15000</span><span class="s2">;</span>
+    <span class="s0">static final int </span><span class="s1">ButtonPin </span><span class="s2">= </span><span class="s3">6</span><span class="s2">;</span>
+    <span class="s0">static final double </span><span class="s1">dryMark </span><span class="s2">= </span><span class="s3">3.4</span><span class="s2">;</span>
+    <span class="s0">static final double </span><span class="s1">moistMark </span><span class="s2">= </span><span class="s3">3.2</span><span class="s2">;</span>
+
+    <span class="s0">public static void </span><span class="s1">main</span><span class="s2">(</span><span class="s1">String</span><span class="s2">[] </span><span class="s1">args</span><span class="s2">) </span><span class="s0">throws </span><span class="s1">IOException</span><span class="s2">, </span><span class="s1">InterruptedException </span><span class="s2">{</span>
+        <span class="s1">String comPort </span><span class="s2">= </span><span class="s4">&quot;COM3&quot;</span><span class="s2">;</span>
+        <span class="s1">IODevice ArduinoObject </span><span class="s2">= </span><span class="s0">new </span><span class="s1">FirmataDevice</span><span class="s2">(</span><span class="s1">comPort</span><span class="s2">);</span>
+        <span class="s1">ArduinoObject</span><span class="s2">.</span><span class="s1">start</span><span class="s2">();</span>
+        <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Starting...&quot;</span><span class="s2">);</span>
+        <span class="s1">ArduinoObject</span><span class="s2">.</span><span class="s1">ensureInitializationIsDone</span><span class="s2">();</span>
+        <span class="s5">// Use 0x3C for the Grove OLED</span>
+        <span class="s1">I2CDevice i2cObject </span><span class="s2">= </span><span class="s1">ArduinoObject</span><span class="s2">.</span><span class="s1">getI2CDevice</span><span class="s2">((</span><span class="s0">byte</span><span class="s2">) </span><span class="s3">0x3C</span><span class="s2">);</span>
+        <span class="s1">SSD1306 oledObject </span><span class="s2">= </span><span class="s0">new </span><span class="s1">SSD1306</span><span class="s2">(</span><span class="s1">i2cObject</span><span class="s2">, </span><span class="s1">SSD1306</span><span class="s2">.</span><span class="s1">Size</span><span class="s2">.</span><span class="s1">SSD1306_128_64</span><span class="s2">);</span>
+        <span class="s1">oledObject</span><span class="s2">.</span><span class="s1">init</span><span class="s2">();</span>
+        <span class="s1">Pin buttonPin </span><span class="s2">= </span><span class="s1">ArduinoObject</span><span class="s2">.</span><span class="s1">getPin</span><span class="s2">(</span><span class="s1">ButtonPin</span><span class="s2">);</span>
+        <span class="s1">Pin moisturePin </span><span class="s2">= </span><span class="s1">ArduinoObject</span><span class="s2">.</span><span class="s1">getPin</span><span class="s2">(</span><span class="s3">2</span><span class="s2">);</span>
+        <span class="s1">ArduinoObject</span><span class="s2">.</span><span class="s1">addEventListener</span><span class="s2">(</span><span class="s0">new </span><span class="s1">ButtonListener</span><span class="s2">(</span><span class="s1">moisturePin</span><span class="s2">, </span><span class="s1">buttonPin</span><span class="s2">));</span>
+        <span class="s1">buttonPin</span><span class="s2">.</span><span class="s1">setMode</span><span class="s2">(</span><span class="s1">Pin</span><span class="s2">.</span><span class="s1">Mode</span><span class="s2">.</span><span class="s1">INPUT</span><span class="s2">);</span>
+        <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">setXscale</span><span class="s2">(-</span><span class="s3">10</span><span class="s2">, </span><span class="s3">100</span><span class="s2">);</span>
+        <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">setYscale</span><span class="s2">(-</span><span class="s3">1</span><span class="s2">, </span><span class="s3">5</span><span class="s2">);</span>
+        <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">setPenRadius</span><span class="s2">(</span><span class="s3">0.0065</span><span class="s2">);</span>
+        <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">setPenColor</span><span class="s2">(</span><span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">BLACK</span><span class="s2">);</span>
+        <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">line</span><span class="s2">(</span><span class="s3">0</span><span class="s2">,</span><span class="s3">0</span><span class="s2">,</span><span class="s3">0</span><span class="s2">,</span><span class="s3">5</span><span class="s2">);</span>
+        <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">line</span><span class="s2">(</span><span class="s3">0</span><span class="s2">,</span><span class="s3">0</span><span class="s2">,</span><span class="s3">100</span><span class="s2">,</span><span class="s3">0</span><span class="s2">);</span>
+        <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">text</span><span class="s2">(</span><span class="s3">45</span><span class="s2">,-</span><span class="s3">0.5</span><span class="s2">,</span><span class="s4">&quot;Time(s)&quot;</span><span class="s2">);</span>
+        <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">text</span><span class="s2">(-</span><span class="s3">8</span><span class="s2">,</span><span class="s3">2.5</span><span class="s2">,</span><span class="s4">&quot;Moist(V)&quot;</span><span class="s2">);</span>
+        <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">text</span><span class="s2">(</span><span class="s3">50</span><span class="s2">,</span><span class="s3">5</span><span class="s2">,</span><span class="s4">&quot;Moisture VS Time&quot;</span><span class="s2">);</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Double</span><span class="s2">&gt; </span><span class="s1">timeData </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;(</span><span class="s1">maxGraphVals</span><span class="s2">);</span>
+        <span class="s1">ArrayList</span><span class="s2">&lt;</span><span class="s1">Double</span><span class="s2">&gt; </span><span class="s1">moistureData </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;(</span><span class="s1">maxGraphVals</span><span class="s2">);</span>
+        <span class="s0">long </span><span class="s1">startTime </span><span class="s2">= </span><span class="s1">System</span><span class="s2">.</span><span class="s1">currentTimeMillis</span><span class="s2">();</span>
+        <span class="s0">while </span><span class="s2">(</span><span class="s0">true</span><span class="s2">) {</span>
+            <span class="s0">double </span><span class="s1">elapsedSeconds </span><span class="s2">= (</span><span class="s1">System</span><span class="s2">.</span><span class="s1">currentTimeMillis</span><span class="s2">() - </span><span class="s1">startTime</span><span class="s2">) / </span><span class="s3">1000.0</span><span class="s2">;</span>
+            <span class="s0">double </span><span class="s1">moisture </span><span class="s2">= </span><span class="s1">readVoltage</span><span class="s2">(</span><span class="s1">ArduinoObject</span><span class="s2">, </span><span class="s3">15</span><span class="s2">);</span>
+            <span class="s1">timeData</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">elapsedSeconds</span><span class="s2">);</span>
+            <span class="s1">moistureData</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">moisture</span><span class="s2">);</span>
+            <span class="s1">drawPlantStatus</span><span class="s2">(</span><span class="s1">moisture</span><span class="s2">, </span><span class="s1">oledObject</span><span class="s2">);</span>
+            <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">point</span><span class="s2">(</span><span class="s1">elapsedSeconds</span><span class="s2">, </span><span class="s1">moisture</span><span class="s2">);</span>
+            <span class="s1">StdDraw</span><span class="s2">.</span><span class="s1">show</span><span class="s2">();</span>
+            <span class="s0">int </span><span class="s1">buttonState </span><span class="s2">= </span><span class="s1">readPin</span><span class="s2">(</span><span class="s1">ArduinoObject</span><span class="s2">, </span><span class="s1">ButtonPin</span><span class="s2">);</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">buttonState </span><span class="s2">== </span><span class="s3">1</span><span class="s2">) {</span>
+                <span class="s1">writePin</span><span class="s2">(</span><span class="s1">ArduinoObject</span><span class="s2">, </span><span class="s3">2</span><span class="s2">, </span><span class="s3">1</span><span class="s2">);</span>
+                <span class="s1">Thread</span><span class="s2">.</span><span class="s1">sleep</span><span class="s2">(</span><span class="s3">3000</span><span class="s2">);</span>
+            <span class="s2">}</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">moisture </span><span class="s2">&gt; </span><span class="s1">dryMark</span><span class="s2">) {</span>
+                <span class="s1">writePin</span><span class="s2">(</span><span class="s1">ArduinoObject</span><span class="s2">, </span><span class="s3">2</span><span class="s2">, </span><span class="s3">1</span><span class="s2">);</span>
+                <span class="s1">Thread</span><span class="s2">.</span><span class="s1">sleep</span><span class="s2">(</span><span class="s3">200</span><span class="s2">);</span>
+                <span class="s1">writePin</span><span class="s2">(</span><span class="s1">ArduinoObject</span><span class="s2">, </span><span class="s3">2</span><span class="s2">, </span><span class="s3">0</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Signal Received!&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Dry soil!&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s1">moisture</span><span class="s2">);</span>
+            <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">moisture </span><span class="s2">&gt; </span><span class="s1">moistMark</span><span class="s2">) {</span>
+                <span class="s1">writePin</span><span class="s2">(</span><span class="s1">ArduinoObject</span><span class="s2">, </span><span class="s3">2</span><span class="s2">, </span><span class="s3">1</span><span class="s2">);</span>
+                <span class="s1">Thread</span><span class="s2">.</span><span class="s1">sleep</span><span class="s2">(</span><span class="s3">100</span><span class="s2">);</span>
+                <span class="s1">writePin</span><span class="s2">(</span><span class="s1">ArduinoObject</span><span class="s2">, </span><span class="s3">2</span><span class="s2">, </span><span class="s3">0</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Signal Received!&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Wet Soil!&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s1">moisture</span><span class="s2">);</span>
+            <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+                <span class="s1">writePin</span><span class="s2">(</span><span class="s1">ArduinoObject</span><span class="s2">, </span><span class="s3">2</span><span class="s2">, </span><span class="s3">0</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Signal Received!&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Pumping Terminated&quot;</span><span class="s2">);</span>
+                <span class="s1">System</span><span class="s2">.</span><span class="s1">out</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s1">moisture</span><span class="s2">);</span>
+            <span class="s2">}</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">elapsedSeconds </span><span class="s2">&gt; </span><span class="s1">maxGraphVals</span><span class="s2">) {</span>
+                <span class="s0">break</span><span class="s2">;</span>
+            <span class="s2">}</span>
+            <span class="s1">Thread</span><span class="s2">.</span><span class="s1">sleep</span><span class="s2">(</span><span class="s3">50</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+    <span class="s0">static double </span><span class="s1">readVoltage</span><span class="s2">(</span><span class="s1">IODevice ArduinoObject</span><span class="s2">, </span><span class="s0">int </span><span class="s1">pin</span><span class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s0">int </span><span class="s1">pinNumber </span><span class="s2">= </span><span class="s1">Integer</span><span class="s2">.</span><span class="s1">parseInt</span><span class="s2">(</span><span class="s1">String</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">pin</span><span class="s2">));</span>
+            <span class="s1">Pin analogPin </span><span class="s2">= </span><span class="s1">ArduinoObject</span><span class="s2">.</span><span class="s1">getPin</span><span class="s2">(</span><span class="s1">pinNumber</span><span class="s2">);</span>
+            <span class="s1">analogPin</span><span class="s2">.</span><span class="s1">setMode</span><span class="s2">(</span><span class="s1">Pin</span><span class="s2">.</span><span class="s1">Mode</span><span class="s2">.</span><span class="s1">ANALOG</span><span class="s2">);</span>
+            <span class="s0">double </span><span class="s1">voltage </span><span class="s2">= </span><span class="s1">analogPin</span><span class="s2">.</span><span class="s1">getValue</span><span class="s2">() * </span><span class="s3">5.0 </span><span class="s2">/ </span><span class="s3">1023.0</span><span class="s2">;</span>
+            <span class="s0">return </span><span class="s1">voltage</span><span class="s2">;</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">err</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Error from pin: &quot; </span><span class="s2">+ </span><span class="s1">pin </span><span class="s2">+ </span><span class="s4">&quot;: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+            <span class="s0">return </span><span class="s3">0</span><span class="s2">;</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+    <span class="s0">static int </span><span class="s1">readPin</span><span class="s2">(</span><span class="s1">IODevice ArduinoObject</span><span class="s2">,</span><span class="s0">int </span><span class="s1">pin</span><span class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">Pin digitPin </span><span class="s2">= </span><span class="s1">ArduinoObject</span><span class="s2">.</span><span class="s1">getPin</span><span class="s2">(</span><span class="s1">pin</span><span class="s2">);</span>
+            <span class="s1">digitPin</span><span class="s2">.</span><span class="s1">setMode</span><span class="s2">(</span><span class="s1">Pin</span><span class="s2">.</span><span class="s1">Mode</span><span class="s2">.</span><span class="s1">INPUT</span><span class="s2">);</span>
+            <span class="s0">return </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">toIntExact</span><span class="s2">(</span><span class="s1">digitPin</span><span class="s2">.</span><span class="s1">getValue</span><span class="s2">());</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">err</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Error reading digital pin &quot; </span><span class="s2">+ </span><span class="s1">pin </span><span class="s2">+ </span><span class="s4">&quot;: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+            <span class="s0">return </span><span class="s3">0</span><span class="s2">;</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+    <span class="s0">static void </span><span class="s1">writePin</span><span class="s2">(</span><span class="s1">IODevice ArduinoObject</span><span class="s2">, </span><span class="s0">int </span><span class="s1">pin</span><span class="s2">, </span><span class="s0">int </span><span class="s1">value</span><span class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">Pin digitPin </span><span class="s2">= </span><span class="s1">ArduinoObject</span><span class="s2">.</span><span class="s1">getPin</span><span class="s2">(</span><span class="s1">pin</span><span class="s2">);</span>
+            <span class="s1">digitPin</span><span class="s2">.</span><span class="s1">setMode</span><span class="s2">(</span><span class="s1">Pin</span><span class="s2">.</span><span class="s1">Mode</span><span class="s2">.</span><span class="s1">OUTPUT</span><span class="s2">);</span>
+            <span class="s1">digitPin</span><span class="s2">.</span><span class="s1">setValue</span><span class="s2">(</span><span class="s1">value</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception e</span><span class="s2">) {</span>
+            <span class="s1">System</span><span class="s2">.</span><span class="s1">err</span><span class="s2">.</span><span class="s1">println</span><span class="s2">(</span><span class="s4">&quot;Error writing digital pin: &quot; </span><span class="s2">+ </span><span class="s1">pin </span><span class="s2">+ </span><span class="s4">&quot;: &quot; </span><span class="s2">+ </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+    <span class="s0">private static void </span><span class="s1">drawPlantStatus</span><span class="s2">(</span><span class="s0">double </span><span class="s1">moistureReadings</span><span class="s2">,</span><span class="s1">SSD1306 oledObject</span><span class="s2">) {</span>
+        <span class="s0">final double </span><span class="s1">voltageFactor </span><span class="s2">= </span><span class="s3">5.0 </span><span class="s2">/ </span><span class="s3">1023.0</span><span class="s2">;</span>
+        <span class="s0">final double </span><span class="s1">offSet </span><span class="s2">= </span><span class="s3">0.2</span><span class="s2">;</span>
+        <span class="s1">oledObject</span><span class="s2">.</span><span class="s1">getCanvas</span><span class="s2">().</span><span class="s1">clear</span><span class="s2">();</span>
+        <span class="s0">double </span><span class="s1">voltageReadings </span><span class="s2">= (</span><span class="s1">moistureReadings </span><span class="s2">* </span><span class="s1">voltageFactor</span><span class="s2">) + </span><span class="s1">offSet</span><span class="s2">;</span>
+        <span class="s0">int </span><span class="s1">level </span><span class="s2">= (</span><span class="s0">int</span><span class="s2">) (</span><span class="s3">100 </span><span class="s2">/ </span><span class="s3">1.50 </span><span class="s2">* </span><span class="s1">voltageReadings</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">level </span><span class="s2">&lt;= </span><span class="s3">0</span><span class="s2">) {</span>
+            <span class="s1">oledObject</span><span class="s2">.</span><span class="s1">getCanvas</span><span class="s2">().</span><span class="s1">drawString</span><span class="s2">(</span><span class="s3">0</span><span class="s2">,</span><span class="s3">0</span><span class="s2">,</span><span class="s4">&quot;Dry Soil: &quot; </span><span class="s2">+ </span><span class="s1">moistureReadings</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else if </span><span class="s2">(</span><span class="s1">level </span><span class="s2">&gt;= </span><span class="s3">100</span><span class="s2">) {</span>
+            <span class="s1">oledObject</span><span class="s2">.</span><span class="s1">getCanvas</span><span class="s2">().</span><span class="s1">drawString</span><span class="s2">(</span><span class="s3">0</span><span class="s2">,</span><span class="s3">0</span><span class="s2">,</span><span class="s4">&quot;Wet Soil: &quot; </span><span class="s2">+ </span><span class="s1">moistureReadings</span><span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">else </span><span class="s2">{</span>
+            <span class="s1">oledObject</span><span class="s2">.</span><span class="s1">getCanvas</span><span class="s2">().</span><span class="s1">drawString</span><span class="s2">(</span><span class="s3">0</span><span class="s2">,</span><span class="s3">0</span><span class="s2">,</span><span class="s4">&quot;Voltage: &quot; </span><span class="s2">+ </span><span class="s1">moistureReadings</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s1">oledObject</span><span class="s2">.</span><span class="s1">display</span><span class="s2">();</span>
+    <span class="s2">}</span>
+<span class="s2">}</span></pre>
+</body>
+</html>
